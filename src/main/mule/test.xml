@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="6549f3ce-43ab-4be2-8b3a-e1f44057c31e" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="testFlow" doc:id="5d706981-8e4b-46d7-a16d-b146571b555c" >
+		<http:listener doc:name="/char" doc:id="1ecc559f-7800-4add-9c4f-c429fec52ce5" config-ref="HTTP_Listener_config" path="/char"/>
+		<logger level="INFO" doc:name="start" doc:id="b6aafe5c-09d2-4220-b675-12bbf141abda" message="start process"/>
+		<ee:transform doc:name="Transform Message" doc:id="0c27a82d-b1cf-4abc-8416-422c5fcfaee8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+//input encoding="ISO-8859-15"
+output application/json encoding="UTF-8"
+---
+{
+	frenchCharacter: payload.char
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="461eebcc-34e6-4621-b324-4790d1d3cd73" message="end process"/>
+	</flow>
+	<flow name="testFlow1" doc:id="4eb658a1-0297-43c0-bea0-7683fcf4de1f" >
+		<http:listener doc:name="/csv" doc:id="1720d8e2-abcf-425e-a3aa-eac161ffe014" config-ref="HTTP_Listener_config" path="/csv"/>
+		<logger level="INFO" doc:name="start" doc:id="d4817a46-e943-46cf-80d8-065d9305375a" message="Start /csv"/>
+		<ee:transform doc:name="Transform Message" doc:id="63e80d34-91b7-4d1e-a958-27e36f4685ee" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv separator=" "
+---
+flatten(payload groupBy ($.Assigned_NO ++ $.Employee_ID) mapObject ((value, key, index) -> 
+  (key[-3 to -1] + index): value
+) pluck ((value, key, index) -> value map ((item, index) -> {
+    "EMPLOYEE ID": key,
+    "ASSIGNED_NO": item.Assigned_NO,
+    "LineNumber": index + 1
+  })))]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="end" doc:id="f0b64826-54ff-47b5-93d0-6c5291a8a405" message="End /csv"/>
+	</flow>
+	<flow name="testFlow2" doc:id="146e1237-bafd-476b-b2ca-fc1cfe4445db" >
+		<http:listener doc:name="/quotationMarks" doc:id="3b04c961-8059-44c7-9807-1d153adf387b" config-ref="HTTP_Listener_config" path="/quotationMarks"/>
+		<ee:transform doc:name="to java" doc:id="2906e3cf-03e2-462a-abc3-1c7aa91f72a1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload.objects]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="35d51b69-36f2-4b0b-9959-8c2c5ecea05a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index) -> {
+    Firstname: item.Firstname,
+    Lastname: item.Lastname replace "\"" with("'"),
+    Description: item.Description replace "\"" with("'")
+})]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
