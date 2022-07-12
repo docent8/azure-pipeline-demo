@@ -7,7 +7,7 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
-	<name>test</name>
+	<name>azure-pipeline-demo</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -31,15 +31,16 @@
 				<extensions>true</extensions>
 				<configuration>
 					<cloudHubDeployment>
-<!-- 						<uri>https://anypoint.mulesoft.com</uri> -->
+						<!-- 						<uri>https://anypoint.mulesoft.com</uri> -->
 						<server>Anypoint</server>
 						<muleVersion>4.4.0</muleVersion>
 						<applicationName>${project.artifactId}-jrs</applicationName>
-<!-- 						<workers>${worker}</workers> -->
+						<!-- 						<workers>${worker}</workers> -->
 						<workerType>Micro</workerType>
 						<environment>Sandbox</environment>
-						<objectStoreV2>true</objectStoreV2>					
+						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
+					<classifier>mule-application</classifier>
 				</configuration>
 			</plugin>
 		</plugins>
