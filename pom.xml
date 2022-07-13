@@ -32,12 +32,13 @@
 				<configuration>
 					<cloudHubDeployment>
 						<!-- 						<uri>https://anypoint.mulesoft.com</uri> -->
-						<server>Anypoint</server>
-						<muleVersion>4.4.0</muleVersion>
-						<applicationName>${project.artifactId}-jrs</applicationName>
+						<server>${server}</server>
+						<muleVersion>${app.runtime}</muleVersion>
+						<applicationName>${app.name}</applicationName>
+						<!-- <applicationName>${project.artifactId}-jrs</applicationName> -->
 						<!-- 						<workers>${worker}</workers> -->
-						<workerType>Micro</workerType>
-						<environment>Sandbox</environment>
+						<workerType>${workerType}</workerType>
+						<environment>${environment}</environment>
 						<objectStoreV2>true</objectStoreV2>
 					</cloudHubDeployment>
 					<classifier>mule-application</classifier>
